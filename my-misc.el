@@ -31,6 +31,7 @@
 
 ;;; Code:
 
+;;;###autoload
 (defun my:unfill-paragraph (&optional region)
   "Make a multi-paragraph REGION into a single line of text."
   (interactive (progn (barf-if-buffer-read-only) '(t)))
@@ -39,12 +40,14 @@
         (emacs-lisp-docstring-fill-column t))
     (fill-paragraph nil region)))
 
+;;;###autoload
 (defun my:eval-and-replace (value)
   "Evaluate the sexp at point and replace it with its VALUE."
   (interactive (list (eval-last-sexp nil)))
   (kill-sexp -1)
   (insert (format "%S" value)))
 
+;;;###autoload
 (defun my:dedicate-window-toggle ()
   "Toggle sticky buffer to current window."
   (interactive)
@@ -52,9 +55,10 @@
    (selected-window)
    (not (window-dedicated-p (selected-window)))))
 
-;; This can be used as the :output argument for org-babel
+;;;###autoload
 (defun my:asset-directory (&optional output-file)
-  "Ensure & return path <buffer-file-name>.assets/OUTPUT-FILE."
+  "Ensure & return path <buffer-file-name>.assets/OUTPUT-FILE.
+This can be used as the :output argument for org code blocks."
   (let ((asset-dir (concat (file-name-sans-extension
                             (buffer-file-name))
                            ".assets")))
@@ -63,6 +67,7 @@
     (concat (file-name-as-directory asset-dir)
             output-file)))
 
+;;;###autoload
 (defun my:loaddefs-regenerate (dir &optional generate-full)
   "Regenerate loaddefs for given DIR.
 Universal argument GENERATE-FULL is passed to `loaddefs-generate'."
@@ -75,6 +80,7 @@ Universal argument GENERATE-FULL is passed to `loaddefs-generate'."
                  "-autoloads.el")))
     (loaddefs-generate dir output nil nil nil generate-full)))
 
+;;;###autoload
 (defun my:loaddefs-regenerate-subdirs (dir &optional all-in-one)
   "Regenerate loaddefs for all subdirectories under DIR.
 When universal argument ALL-IN-ONE is given, compose them into
@@ -94,9 +100,11 @@ one single `loaddefs.el' and byte-compile it."
             (byte-compile-file all-in-file))
           (my:loaddefs-regenerate subdir t))))))
 
-;; there is an async version provided by koishimacs, which needs async
+;;;###autoload
 (defun my:byte-force-recompile-subdirs (dir)
-  "Call `byte-force-recompile' on all subdirectories of DIR."
+  "Call `byte-force-recompile' on all subdirectories of DIR.
+There is also an async version provided by koishimacs, which
+depends on package `async' ."
   (interactive "DPath of parent directory: ")
   (dolist (child (file-name-all-completions "" dir))
     (when (and (directory-name-p child)
@@ -104,6 +112,7 @@ one single `loaddefs.el' and byte-compile it."
       (byte-force-recompile
        (concat (file-name-as-directory dir) child)))))
 
+;;;###autoload
 (defun my:adjust-alpha (fg bg)
   "Set window opacity to (FG . BG) by setting frame parameter `alpha'."
   (declare (obsolete my:adjust-alpha-background "29"))
@@ -112,6 +121,7 @@ one single `loaddefs.el' and byte-compile it."
 nBackground Transparency Value 0 - 100 opaque: ")
   (set-frame-parameter (selected-frame) 'alpha `(,fg . ,bg)))
 
+;;;###autoload
 (defun my:adjust-alpha-background (value)
   "Set window opacity to VALUE by setting frame parameter `alpha-background' ."
   (interactive "nTransparency Value 0 - 100 opaque: ")
