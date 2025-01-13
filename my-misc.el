@@ -101,8 +101,22 @@ one single `loaddefs.el' and byte-compile it."
           (my:loaddefs-regenerate subdir t))))))
 
 ;;;###autoload
+(defun my:byte-compile-subdirs (dir)
+  "Byte compile all subdirectories under DIR.
+
+There is also an async version provided by koishimacs, which
+depends on package `async' ."
+  (interactive "DPath of parent directory: ")
+  (dolist (file (file-name-all-completions "" dir))
+    (when (and (directory-name-p file)
+               (not (member file '("./" "../" ".git/" "archives/" "gnupg/"))))
+      (byte-recompile-directory
+       (concat (file-name-as-directory dir) file)))))
+
+;;;###autoload
 (defun my:byte-force-recompile-subdirs (dir)
   "Call `byte-force-recompile' on all subdirectories of DIR.
+
 There is also an async version provided by koishimacs, which
 depends on package `async' ."
   (interactive "DPath of parent directory: ")
