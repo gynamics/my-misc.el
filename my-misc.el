@@ -54,14 +54,17 @@
 
 ;; This can be used as the :output argument for org-babel
 (defun my:asset-directory (&optional output-file)
-  "Ensure & return path <buffer-file-name>.assets/OUTPUT-FILE."
-  (let ((asset-dir (concat (file-name-sans-extension
-                            (buffer-file-name))
-                           ".assets")))
-    (unless (file-exists-p asset-dir)
-      (mkdir asset-dir))
-    (concat (file-name-as-directory asset-dir)
-            output-file)))
+  "If current buffer is a file, return path <file-name>.assets/OUTPUT-FILE.
+Otherwise, return <temporary-file-directory>/OUTPUT-FILE."
+  (let ((name (buffer-file-name)))
+    (if (file-exists-p name)
+        (let ((asset-dir
+               (concat (file-name-sans-extension (file-name-base name))
+                       ".assets/")))
+          (unless (file-exists-p asset-dir)
+            (mkdir asset-dir))
+          (file-name-concat asset-dir output-file))
+      (file-name-concat (temporary-file-directory) output-file))))
 
 (defun my:loaddefs-regenerate (dir &optional generate-full)
   "Regenerate loaddefs for given DIR.
