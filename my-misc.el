@@ -31,6 +31,34 @@
 
 ;;; Code:
 
+(defun my:mark-whole-line (&optional arg)
+  "Set mark ARG lines from line beginning of point or move mark one line.
+When invoked interactively without a prefix argument and no active
+region, mark moves to beginning of line.
+When invoked interactively without a prefix argument, and region is
+active, mark moves one line away of point (i.e., forward if mark is at
+or after point, back if mark is before point), thus extending the region
+by one line.  Since the direction of region extension depends on the
+relative position of mark and point, you can change the direction by
+\\[exchange-point-and-mark]."
+  (interactive "P")
+  (if (region-active-p)
+      (progn
+        (setq arg (if arg (prefix-numeric-value arg)
+                    (if (< (mark) (point)) -1 1)))
+        (set-mark
+         (save-excursion
+           (goto-char (mark))
+           (forward-line arg)
+           (point))))
+    (progn
+      (move-beginning-of-line nil)
+      (push-mark
+       (save-excursion
+         (forward-line (prefix-numeric-value arg))
+         (point))
+       nil t))))
+
 (defun my:unfill-paragraph (&optional region)
   "Make a multi-paragraph REGION into a single line of text."
   (interactive (progn (barf-if-buffer-read-only) '(t)))
