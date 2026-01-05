@@ -1,11 +1,11 @@
-;;; my-misc.el --- my miscellaneous elisp scripts -*- lexical-binding: t -*-
+;;; my-misc.el --- My miscellaneous elisp scripts -*- lexical-binding: t -*-
 
 ;; Author: gynamics
 ;; Maintainer: gynamics
 ;; Package-Version: 0.1
-;; Package-Requires:
+;; Package-Requires: ((emacs "26.1"))
 ;; URL: https://github.com/gynamics/my-misc.el
-;; Keywords: ultility
+;; Keywords: convenience
 
 
 ;; This file is not part of GNU Emacs
@@ -27,11 +27,11 @@
 ;;; Commentary:
 
 ;; Here are some useful short functions I collected that are not
-;; shipped with Emacs, all started with a `my:` prefix.
+;; shipped with Emacs, all started with a `my-misc-` prefix.
 
 ;;; Code:
 
-(defun my:mark-whole-line (&optional arg)
+(defun my-misc-mark-whole-line (&optional arg)
   "Set mark ARG lines from line beginning of point or move mark one line.
 When invoked interactively without a prefix argument and no active
 region, mark moves to beginning of line.
@@ -59,7 +59,7 @@ relative position of mark and point, you can change the direction by
          (point))
        nil t))))
 
-(defun my:unfill-paragraph (&optional region)
+(defun my-misc-unfill-paragraph (&optional region)
   "Make a multi-paragraph REGION into a single line of text."
   (interactive (progn (barf-if-buffer-read-only) '(t)))
   (let ((fill-column (point-max))
@@ -67,13 +67,13 @@ relative position of mark and point, you can change the direction by
         (emacs-lisp-docstring-fill-column t))
     (fill-paragraph nil region)))
 
-(defun my:eval-and-replace (value)
+(defun my-misc-eval-and-replace (value)
   "Evaluate the sexp at point and replace it with its VALUE."
   (interactive (list (eval-last-sexp nil)))
   (kill-sexp -1)
   (insert (format "%S" value)))
 
-(defun my:dedicate-window-toggle ()
+(defun my-misc-dedicate-window-toggle ()
   "Toggle sticky buffer to current window."
   (interactive)
   (set-window-dedicated-p
@@ -81,7 +81,7 @@ relative position of mark and point, you can change the direction by
    (not (window-dedicated-p (selected-window)))))
 
 ;; This can be used as the :output argument for org-babel
-(defun my:asset-directory (&optional output-file)
+(defun my-misc-asset-directory (&optional output-file)
   "If current buffer is a file, return path <file-name>.assets/OUTPUT-FILE.
 Otherwise, return <temporary-file-directory>/OUTPUT-FILE."
   (let ((name (buffer-file-name)))
@@ -94,7 +94,7 @@ Otherwise, return <temporary-file-directory>/OUTPUT-FILE."
           (file-name-concat asset-dir output-file))
       (file-name-concat (temporary-file-directory) output-file))))
 
-(defun my:loaddefs-regenerate (dir &optional generate-full)
+(defun my-misc-loaddefs-regenerate (dir &optional generate-full)
   "Regenerate loaddefs for given DIR.
 Universal argument GENERATE-FULL is passed to `loaddefs-generate'."
   (interactive "DPath of pacakge: \nP")
@@ -106,7 +106,7 @@ Universal argument GENERATE-FULL is passed to `loaddefs-generate'."
                  "-autoloads.el")))
     (loaddefs-generate dir output nil nil nil generate-full)))
 
-(defun my:loaddefs-regenerate-subdirs (dir &optional all-in-one)
+(defun my-misc-loaddefs-regenerate-subdirs (dir &optional all-in-one)
   "Regenerate loaddefs for all subdirectories under DIR.
 When universal argument ALL-IN-ONE is given, compose them into
 one single `loaddefs.el' and byte-compile it."
@@ -123,10 +123,10 @@ one single `loaddefs.el' and byte-compile it."
               (delete-file all-in-file))
             (loaddefs-generate subdir all-in-file)
             (byte-compile-file all-in-file))
-          (my:loaddefs-regenerate subdir t))))))
+          (my-misc-loaddefs-regenerate subdir t))))))
 
 ;; there is an async version provided by koishimacs, which needs async
-(defun my:byte-force-recompile-subdirs (dir)
+(defun my-misc-byte-force-recompile-subdirs (dir)
   "Call `byte-force-recompile' on all subdirectories of DIR."
   (interactive "DPath of parent directory: ")
   (dolist (child (file-name-all-completions "" dir))
@@ -135,15 +135,15 @@ one single `loaddefs.el' and byte-compile it."
       (byte-force-recompile
        (concat (file-name-as-directory dir) child)))))
 
-(defun my:adjust-alpha (fg bg)
+(defun my-misc-adjust-alpha (fg bg)
   "Set window opacity to (FG . BG) by setting frame parameter `alpha'."
-  (declare (obsolete my:adjust-alpha-background "29"))
+  (declare (obsolete my-misc-adjust-alpha-background "29"))
   (interactive
    "nForeground Transparency Value 0 - 100 opaque: \n\
 nBackground Transparency Value 0 - 100 opaque: ")
   (set-frame-parameter (selected-frame) 'alpha `(,fg . ,bg)))
 
-(defun my:adjust-alpha-background (value)
+(defun my-misc-adjust-alpha-background (value)
   "Set window opacity to VALUE by setting frame parameter `alpha-background' ."
   (interactive "nTransparency Value 0 - 100 opaque: ")
   (set-frame-parameter (selected-frame) 'alpha-background value))
